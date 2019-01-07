@@ -58,10 +58,9 @@ contract SimpleBank {
     /// @return The users enrolled status
     // Emit the appropriate event
     function enroll() public returns (bool){
-        address _customer = msg.sender;
-        enrolled[_customer] = true;
-        emit LogEnrolled(_customer);
-        return enrolled[_customer];
+        enrolled[msg.sender] = true;
+        emit LogEnrolled(msg.sender);
+        return enrolled[msg.sender];
     }
 
     /// @notice Deposit ether into bank
@@ -72,11 +71,9 @@ contract SimpleBank {
     function deposit() public payable returns (uint) {
         /* Add the amount to the user's balance, call the event associated with a deposit,
           then return the balance of the user */
-        address _sender = msg.sender;
-        uint _deposited = msg.value;
-        balances[_sender] = balances[_sender] + _deposited;
-        emit LogDepositMade(_sender, _deposited);
-        return balances[_sender];
+        balances[msg.sender] = balances[msg.sender] + msg.value;
+        emit LogDepositMade(msg.sender, msg.value);
+        return balances[msg.sender];
     }
 
     /// @notice Withdraw ether from bank
@@ -90,11 +87,10 @@ contract SimpleBank {
            to the user attempting to withdraw.
            return the user's balance.*/
         require(withdrawAmount <= balances[msg.sender], "The transaction cannot go through because the balance is too low!");
-        address _user = msg.sender;
-        balances[_user] = balances[_user] - withdrawAmount;
+        balances[msg.sender] -= withdrawAmount;
         msg.sender.transfer(withdrawAmount);
-        emit LogWithdrawal(_user, withdrawAmount, balances[_user]);
-        return balances[_user];
+        emit LogWithdrawal(msg.sender, withdrawAmount, balances[msg.sender]);
+        return balances[msg.sender];
     }
 
     // Fallback function - Called if other functions don't match call or
